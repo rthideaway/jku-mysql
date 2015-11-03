@@ -69,13 +69,15 @@ node['jku-mysql']['mysql'].each do |server_data|
 
     # Copy dump file
     cookbook_file "/tmp/#{server['db_dump']}" do
-        mode 00755
+      mode 00755
+      only_if { File.exist?("/tmp/#{server['db_dump']}") }
     end
 
     # Import an sql dump
     execute 'import' do
       command "mysql -h 127.0.0.1 -u root -p#{server['root_password']} #{server['db_name']} < /tmp/#{server['db_dump']}"
       action :run
+      only_if { File.exist?("/tmp/#{server['db_dump']}") }
     end
 
 end
